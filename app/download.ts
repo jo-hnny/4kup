@@ -1,10 +1,18 @@
-import { promises as fs } from "fs";
+import fs from "fs";
+import { proxy } from "./config";
+import Axios from "axios";
 
 export async function download(url: string, path: string) {
-  const response = await fetch(url);
-  const blob = await response.blob();
-  const arrayBuffer = await blob.arrayBuffer();
-  const buffer = Buffer.from(arrayBuffer);
+  const writer = fs.createWriteStream(path);
+  const response = await Axios.get(url, {
+    responseType: "stream",
+    proxy,
+  });
 
-  await fs.writeFile(path, buffer);
+  response.data.pipe(writer);
+
+  return new Promise((resolve, reject) => {
+    writer.on("finish", resolve);
+    writer.on("error", reject);
+  });
 }
