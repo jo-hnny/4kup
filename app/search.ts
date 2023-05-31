@@ -1,23 +1,22 @@
-import { Browser } from "puppeteer";
+import { axios } from "./request";
 
-const baseUrl = "https://www.4kup.net";
+export async function search(
+  key: string
+): Promise<{ href: string; title: string }[]> {
+  const url = `http://www.4kup.net/feeds/posts/summary?q=${key}&start-index=1&max-results=100&orderby=published&alt=json`;
 
-export async function search(browser: Browser, key: string) {
-  const page = await browser.newPage();
-  await page.goto(`${baseUrl}/search?q=${key}`, { waitUntil: "networkidle2" });
+  const rsp = await axios.get(url);
 
-  const entryList = await page.$$("#postfeed .entry-title a");
+  const pages = rsp?.data?.feed?.entry?.map((item: any) => {
+    const href = item?.link?.find((l: any) => l.rel === "alternate")?.href;
 
-  console.log("search count:", entryList.length);
+    const title = item?.title?.$t;
 
-  const entryLinks = await Promise.all(
-    entryList.map(async (a) => {
-      const href = await a.getProperty("href");
-      return href.jsonValue();
-    })
-  );
+    return {
+      href,
+      title,
+    };
+  });
 
-  await page.close();
-
-  return entryLinks;
+  return pages;
 }

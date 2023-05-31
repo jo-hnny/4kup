@@ -1,29 +1,35 @@
-import puppeteer from "puppeteer";
 import { search } from "./search";
 import { parsePage } from "./parsePage";
-import { proxy, enableProxy, key } from "./config";
+import { key, saveDir } from "./config";
+import { download } from "./download";
+import fs from "fs";
 
 async function start() {
-  try {
-    const browser = await puppeteer.launch({
-      args: enableProxy
-        ? [`--proxy-server=${proxy.host}:${proxy.port}`]
-        : undefined,
-    });
+  const pages = await search(key);
 
-    const entryLinks = await search(browser, key);
+  await pages.reduce(async (prePromise, { href, title }) => {
+    await prePromise;
 
-    await entryLinks.reduce(async (prePromise, link) => {
-      await prePromise;
-      return parsePage(browser, link);
-    }, Promise.resolve());
+    const baseDir = `${saveDir}/${key}/${title}`;
 
-    await browser.close();
+    if (!fs.existsSync(baseDir)) {
+      fs.mkdirSync(baseDir, { recursive: true });
+    }
 
-    console.log("success");
-  } catch (error) {
-    console.log("error--->", error);
-  }
+    const images = await parsePage(href);
+
+    await Promise.all(
+      images.map(async (link) => {
+        const fileName = link.split("/").pop();
+
+        return download(link, `${baseDir}/${fileName}`);
+      })
+    );
+
+    console.log(`${title} downloaded!`);
+  }, Promise.resolve());
+
+  console.log(`success download ${key} !`);
 }
 
 start();
