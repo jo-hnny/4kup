@@ -6,6 +6,6 @@ export const proxy = {
 
 export const enableProxy = false;
 
-export const key = "pyoapple";
+export const key = "leeesovely";
 
 export const saveDir = "./images";
