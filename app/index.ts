@@ -1,14 +1,16 @@
 import puppeteer from "puppeteer";
 import { search } from "./search";
 import { parsePage } from "./parsePage";
-import { proxy } from "./config";
+import { proxy, enableProxy } from "./config";
 
 const key = "leeesovely";
 
 async function start() {
   try {
     const browser = await puppeteer.launch({
-      args: [`--proxy-server=${proxy.host}:${proxy.port}`],
+      args: enableProxy
+        ? [`--proxy-server=${proxy.host}:${proxy.port}`]
+        : undefined,
     });
 
     const entryLinks = await search(browser, key);

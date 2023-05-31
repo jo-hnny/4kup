@@ -1,12 +1,12 @@
 import fs from "fs";
-import { proxy } from "./config";
+import { proxy, enableProxy } from "./config";
 import Axios from "axios";
 
 export async function download(url: string, path: string) {
   const writer = fs.createWriteStream(path);
   const response = await Axios.get(url, {
     responseType: "stream",
-    proxy,
+    proxy: enableProxy && proxy,
   });
 
   response.data.pipe(writer);
