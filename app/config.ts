@@ -6,6 +6,10 @@ export const proxy = {
 
 export const enableProxy = false;
 
-export const keys = ["leeesovely", "pyoapple"];
+export const keys = ["pyoapple", "leeesovely"];
 
 export const saveDir = "./images";
+
+export const size = "h1000-e7";
+
+export const originSize = "h120";

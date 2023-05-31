@@ -1,8 +1,8 @@
 import { search } from "./search";
 import { parsePage } from "./parsePage";
-import { keys, saveDir } from "./config";
+import { keys, saveDir, size, originSize } from "./config";
 import { download } from "./download";
-import fs from "fs";
+import { mkDirIfNone, sleep } from "./utils";
 
 async function singleTask(key: string) {
   try {
@@ -13,17 +13,17 @@ async function singleTask(key: string) {
 
       const baseDir = `${saveDir}/${key}/${title}`;
 
-      if (!fs.existsSync(baseDir)) {
-        fs.mkdirSync(baseDir, { recursive: true });
-      }
+      mkDirIfNone(baseDir);
 
       const images = await parsePage(href);
 
       await Promise.all(
-        images.map(async (link) => {
+        images.map(async (_link) => {
+          const link = _link.replace(originSize, size);
+
           const fileName = link.split("/").pop();
 
-          return download(link, `${baseDir}/${fileName}`);
+          await download(link, `${baseDir}/${fileName}`);
         })
       );
 

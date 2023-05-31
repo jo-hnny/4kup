@@ -1,18 +1,22 @@
 import fs from "fs";
 import { proxy, enableProxy } from "./config";
-import Axios from "axios";
+import { axios } from "./request";
 
 export async function download(url: string, path: string) {
-  const writer = fs.createWriteStream(path);
-  const response = await Axios.get(url, {
-    responseType: "stream",
-    proxy: enableProxy && proxy,
-  });
+  try {
+    const writer = fs.createWriteStream(path);
+    const response = await axios.get(url, {
+      responseType: "stream",
+      proxy: enableProxy && proxy,
+    });
 
-  response.data.pipe(writer);
+    response.data.pipe(writer);
 
-  return new Promise((resolve, reject) => {
-    writer.on("finish", resolve);
-    writer.on("error", reject);
-  });
+    await new Promise((resolve, reject) => {
+      writer.on("finish", resolve);
+      writer.on("error", reject);
+    });
+  } catch (error) {
+    console.log("download fail:", url);
+  }
 }
