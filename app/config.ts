@@ -5,3 +5,7 @@ export const proxy = {
 };
 
 export const enableProxy = false;
+
+export const key = "pyoapple";
+
+export const saveDir = "./images";

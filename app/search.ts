@@ -8,6 +8,8 @@ export async function search(browser: Browser, key: string) {
 
   const entryList = await page.$$("#postfeed .entry-title a");
 
+  console.log("search count:", entryList.length);
+
   const entryLinks = await Promise.all(
     entryList.map(async (a) => {
       const href = await a.getProperty("href");

@@ -1,13 +1,13 @@
 import { Browser } from "puppeteer";
 import fs from "fs";
 import { download } from "./download";
-
-const baseDir = "./images";
+import { key, saveDir } from "./config";
 
 export async function parsePage(browser: Browser, link: string) {
   const albumName = link.split("/").pop()?.replace(".html", "");
 
-  const albumDir = `${baseDir}/${albumName}`;
+  const albumDir = `${saveDir}/${key}/${albumName}`;
+
   if (!fs.existsSync(albumDir)) {
     fs.mkdirSync(albumDir, { recursive: true });
   }

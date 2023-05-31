@@ -1,9 +1,7 @@
 import puppeteer from "puppeteer";
 import { search } from "./search";
 import { parsePage } from "./parsePage";
-import { proxy, enableProxy } from "./config";
-
-const key = "leeesovely";
+import { proxy, enableProxy, key } from "./config";
 
 async function start() {
   try {
